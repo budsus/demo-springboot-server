@@ -19,5 +19,7 @@ CREATE TABLE `person` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 ```
 
+Untuk setup koneksi ke database, konfigurasi dapat diatur pada file ```application-dev.properties``` dan ```application-release.properties``` yang terletak pada folder ```src/main/resources```.
+
 ## Informasi Tambahan
 Sebelum menjalankan, jika ingin mengaktifkan debug mode, klik kanan item project demo, lalu Run As > Run Configuration, lalu pada tab Arguments, tambahkan --debug pada item Program arguments. Dan untuk menjalankan, silahkan klik kanan item project demo, lalu Run As > Spring Boot App.
