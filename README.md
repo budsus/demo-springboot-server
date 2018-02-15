@@ -15,8 +15,39 @@ CREATE TABLE `person` (
   `id` int(11) NOT NULL,
   `first_name` varchar(255) NOT NULL,
   `last_name` varchar(255) NOT NULL,
-  `age` int(11) NOT NULL
+  `age` int(11) NOT NULL,
+  `registrasi_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ALTER TABLE `person`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `person`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+```
+
+```
+CREATE TABLE `phones` (
+  `id` int(11) NOT NULL,
+  `phonenumber` varchar(12) DEFAULT NULL,
+  `person_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ALTER TABLE `phones`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `FKwv3t1162yqg75mx1xb9bcycs` (`person_id`);
+ALTER TABLE `phones`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `phones`
+  ADD CONSTRAINT `FKwv3t1162yqg75mx1xb9bcycs` FOREIGN KEY (`person_id`) REFERENCES `person` (`id`);
+```
+
+```
+CREATE TABLE `registrasi` (
+  `id` int(11) NOT NULL,
+  `noregis` varchar(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+ALTER TABLE `registrasi`
+  ADD PRIMARY KEY (`id`);
+ALTER TABLE `registrasi`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 ```
 
 Untuk setup koneksi ke database, konfigurasi dapat diatur pada file ```application-dev.properties``` dan ```application-release.properties``` yang terletak pada folder ```src/main/resources```.
