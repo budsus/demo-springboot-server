@@ -1,12 +1,11 @@
 package id.ac.ukdw.demo.model;
 
 import java.io.Serializable;
-import java.util.Set;
-
+import java.util.Collection;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-//import javax.persistence.ElementCollection;
+import javax.persistence.EntityListeners;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,33 +22,37 @@ import org.json.JSONObject;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+//import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import id.ac.ukdw.auditor.Auditable;
+import id.ac.ukdw.auditor.listener.PersonEntityListener;
+
 @Entity
+@EntityListeners(PersonEntityListener.class)
 @Table(name = "person")
 @JsonIdentityInfo(generator=ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
-public class Person implements Serializable {
+public class Person extends Auditable<String> implements Serializable {
 	private static final long serialVersionUID = -2582690158977818750L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	private Long id;
+	
 	@Column(name = "first_name")
 	private String firstName;
+	
 	@Column(name = "last_name")
 	private String lastName;
+	
 	@Column(name = "age")
 	private int age;
-	// @OneToMany(mappedBy = "person", cascade = CascadeType.ALL, fetch =
-	// FetchType.EAGER, orphanRemoval = true)
-	// @ElementCollection(targetClass=Phone.class)
-	// @Column(name = "person_id")
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-	@JoinColumn(name = "person_id")
-	private Set<Phone> phones;
 	
-	@OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
+	@OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.EAGER, orphanRemoval = true, mappedBy = "person")
+	private Collection<Phone> phones;
+	
+	@OneToOne(fetch = FetchType.EAGER, optional = false, orphanRemoval = true, cascade = CascadeType.ALL)
 	@JoinColumn(name = "registrasi_id")
 	@JsonBackReference
 	@JsonIgnoreProperties("biodata")
@@ -90,14 +93,15 @@ public class Person implements Serializable {
 		this.age = age;
 	}
 
-	public void setPhones(Set<Phone> phones) {
+	public void setPhones(Collection<Phone> phones) {
 		this.phones = phones;
 	}
 
-	public Set<Phone> getPhones() {
+	
+	public Collection<Phone> getPhones() {
 		return this.phones;
 	}
-
+	
 	@Override
 	public String toString() {
 		String info = "";
@@ -109,14 +113,14 @@ public class Person implements Serializable {
 
 			JSONArray phonesArray = new JSONArray();
 			if (getPhones() != null) {
-				getPhones().forEach(phone -> {
+				for(Phone p:getPhones()) {
 					JSONObject subJson = new JSONObject();
 					try {
-						subJson.put("phonenumber", phone.getPhonenumber());
-					} catch (JSONException e) {
-					}
+						subJson.put("id", p.getId());
+						subJson.put("phonenumber", p.getPhonenumber());
+					} catch (JSONException e) {}
 					phonesArray.put(subJson);
-				});
+				}
 			}
 			jsonInfo.put("phones", phonesArray);
 			jsonInfo.put("registrasi", getRegistrasi());
@@ -133,5 +137,15 @@ public class Person implements Serializable {
 
 	public void setRegistrasi(Registrasi registrasi) {
 		this.regis = registrasi;
+	}
+	
+	public void addPhone(Phone phone) {
+		phones.add(phone);
+		phone.setPerson(this);
+	}
+	
+	public void removePhone(Phone phone) {
+		phones.remove(phone);
+		phone.setPerson(null);
 	}
 }

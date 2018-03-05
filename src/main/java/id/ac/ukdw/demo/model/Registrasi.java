@@ -39,7 +39,7 @@ public class Registrasi implements Serializable {
 	private String noregis;
 
 	@JsonIgnore
-	@OneToOne(mappedBy="regis", fetch=FetchType.EAGER, cascade=CascadeType.ALL)
+	@OneToOne(mappedBy="regis", fetch=FetchType.EAGER, cascade=CascadeType.ALL, orphanRemoval = true, optional = true)
 	@JsonManagedReference
 	private Person biodata;
 

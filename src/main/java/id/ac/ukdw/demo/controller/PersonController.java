@@ -35,7 +35,6 @@ public class PersonController {
 			produces = MediaType.APPLICATION_JSON_VALUE) 
 	@ResponseBody
 	public ResponseEntity<Person> createPerson(@RequestBody Person p) {
-		LOGGER.info("Person: " + p);
 		/*
 		 * Contoh JSON Request:
 		 * {
@@ -84,9 +83,10 @@ public class PersonController {
 		if (id != null) {
 			p.setId(id);
 			ps.updatePerson(p);
+			return new ResponseEntity<Person>(p, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<Person>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity<Person>(p, HttpStatus.OK);
-		//return new ResponseEntity<Person>(HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 	
 	@RequestMapping(
